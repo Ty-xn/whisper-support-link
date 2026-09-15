@@ -1,0 +1,10 @@
+{
+  "name": "Calculator",
+  "short_name": "Calculator",
+  "description": "A simple calculator.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f9fa",
+  "theme_color": "#e9eff3",
+  "icons": [{ "src": "/favicon.ico", "sizes": "48x48", "type": "image/x-icon" }]
+}
