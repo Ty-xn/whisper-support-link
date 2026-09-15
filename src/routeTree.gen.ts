@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as PathwaysRouteImport } from './routes/pathways'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -18,6 +19,11 @@ import { Route as SupportRouteImport } from './routes/support'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AssistantRoute = AssistantRouteImport.update({
+  id: '/assistant',
+  path: '/assistant',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LearnRoute = LearnRouteImport.update({
@@ -43,6 +49,7 @@ const SupportRoute = SupportRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/assistant': typeof AssistantRoute
   '/learn': typeof LearnRoute
   '/pathways': typeof PathwaysRoute
   '/privacy': typeof PrivacyRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/assistant': typeof AssistantRoute
   '/learn': typeof LearnRoute
   '/pathways': typeof PathwaysRoute
   '/privacy': typeof PrivacyRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/assistant': typeof AssistantRoute
   '/learn': typeof LearnRoute
   '/pathways': typeof PathwaysRoute
   '/privacy': typeof PrivacyRoute
@@ -65,14 +74,23 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/learn' | '/pathways' | '/privacy' | '/support'
+  fullPaths:
+    '/' | '/assistant' | '/learn' | '/pathways' | '/privacy' | '/support'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/learn' | '/pathways' | '/privacy' | '/support'
-  id: '__root__' | '/' | '/learn' | '/pathways' | '/privacy' | '/support'
+  to: '/' | '/assistant' | '/learn' | '/pathways' | '/privacy' | '/support'
+  id:
+    | '__root__'
+    | '/'
+    | '/assistant'
+    | '/learn'
+    | '/pathways'
+    | '/privacy'
+    | '/support'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AssistantRoute: typeof AssistantRoute
   LearnRoute: typeof LearnRoute
   PathwaysRoute: typeof PathwaysRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -86,6 +104,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/assistant': {
+      id: '/assistant'
+      path: '/assistant'
+      fullPath: '/assistant'
+      preLoaderRoute: typeof AssistantRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/learn': {
@@ -121,6 +146,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AssistantRoute: AssistantRoute,
   LearnRoute: LearnRoute,
   PathwaysRoute: PathwaysRoute,
   PrivacyRoute: PrivacyRoute,
