@@ -17,6 +17,7 @@ import { Route as LearnRouteImport } from './routes/learn'
 import { Route as PathwaysRouteImport } from './routes/pathways'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as SupportRouteImport } from './routes/support'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
 
@@ -59,6 +60,11 @@ const SupportRoute = SupportRouteImport.update({
   path: '/support',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedJournalRoute = AuthenticatedJournalRouteImport.update({
   id: '/journal',
   path: '/journal',
@@ -78,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/pathways': typeof PathwaysRoute
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/plan': typeof AuthenticatedPlanRoute
 }
@@ -89,6 +96,7 @@ export interface FileRoutesByTo {
   '/pathways': typeof PathwaysRoute
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/plan': typeof AuthenticatedPlanRoute
 }
@@ -102,6 +110,7 @@ export interface FileRoutesById {
   '/pathways': typeof PathwaysRoute
   '/privacy': typeof PrivacyRoute
   '/support': typeof SupportRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/journal': typeof AuthenticatedJournalRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
 }
@@ -115,6 +124,7 @@ export interface FileRouteTypes {
     | '/pathways'
     | '/privacy'
     | '/support'
+    | '/admin'
     | '/journal'
     | '/plan'
   fileRoutesByTo: FileRoutesByTo
@@ -126,6 +136,7 @@ export interface FileRouteTypes {
     | '/pathways'
     | '/privacy'
     | '/support'
+    | '/admin'
     | '/journal'
     | '/plan'
   id:
@@ -138,6 +149,7 @@ export interface FileRouteTypes {
     | '/pathways'
     | '/privacy'
     | '/support'
+    | '/_authenticated/admin'
     | '/_authenticated/journal'
     | '/_authenticated/plan'
   fileRoutesById: FileRoutesById
@@ -211,6 +223,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SupportRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/journal': {
       id: '/_authenticated/journal'
       path: '/journal'
@@ -229,11 +248,13 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedJournalRoute: typeof AuthenticatedJournalRoute
   AuthenticatedPlanRoute: typeof AuthenticatedPlanRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedJournalRoute: AuthenticatedJournalRoute,
   AuthenticatedPlanRoute: AuthenticatedPlanRoute,
 }
