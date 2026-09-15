@@ -4,11 +4,11 @@ import { useMemo } from "react";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 
-type Search = { need?: string };
+type Search = { need: string };
 
 export const Route = createFileRoute("/pathways")({
   validateSearch: (search: Record<string, unknown>): Search => ({
-    need: typeof search.need === "string" ? search.need : undefined,
+    need: typeof search["need"] === "string" ? (search["need"] as string) : "",
   }),
   head: () => ({
     meta: [
