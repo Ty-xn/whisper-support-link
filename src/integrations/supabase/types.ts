@@ -292,6 +292,7 @@ export type Database = {
       support_services: {
         Row: {
           category_slug: string
+          contact_page_url: string | null
           created_at: string
           description: string
           email: string | null
@@ -303,12 +304,14 @@ export type Database = {
           location: string | null
           name: string
           phone: string | null
+          source_url: string | null
           updated_at: string
           verification_status: string
           website: string | null
         }
         Insert: {
           category_slug: string
+          contact_page_url?: string | null
           created_at?: string
           description?: string
           email?: string | null
@@ -320,12 +323,14 @@ export type Database = {
           location?: string | null
           name: string
           phone?: string | null
+          source_url?: string | null
           updated_at?: string
           verification_status?: string
           website?: string | null
         }
         Update: {
           category_slug?: string
+          contact_page_url?: string | null
           created_at?: string
           description?: string
           email?: string | null
@@ -337,6 +342,7 @@ export type Database = {
           location?: string | null
           name?: string
           phone?: string | null
+          source_url?: string | null
           updated_at?: string
           verification_status?: string
           website?: string | null

@@ -1,0 +1,1 @@
+ALTER TABLE public.support_services ADD COLUMN IF NOT EXISTS contact_page_url text, ADD COLUMN IF NOT EXISTS source_url text;

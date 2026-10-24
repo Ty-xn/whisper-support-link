@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
@@ -126,9 +126,9 @@ function SupportPage() {
         })}
       </div>
 
-      <p className="mt-4 rounded-xl border border-dashed border-clay/50 px-4 py-3 text-[12px] leading-relaxed text-clay">
-        Demonstration data. These are sample organisations created for a prototype. Every listing must be verified
-        before this directory is used for real.
+      <p className="mt-4 rounded-xl border border-dashed border-border px-4 py-3 text-[12px] leading-relaxed text-muted-foreground">
+        South African organisations. Details were checked against each organisation's official website on the date
+        shown. Numbers can change — use the official contact page if a call does not connect.
       </p>
 
       {services.isLoading ? (
@@ -163,7 +163,11 @@ function SupportPage() {
               <div className="mt-1 flex items-start justify-between gap-3">
                 <h2 className="font-display text-[19px] leading-snug text-foreground">{s.name}</h2>
                 <span className="shrink-0 rounded-md bg-muted px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">
-                  {s.verification_status === "verified" ? "Verified" : "Sample"}
+                  {s.verification_status === "verified"
+                    ? "Verified"
+                    : s.verification_status === "checked_online"
+                      ? "Checked online"
+                      : "Sample"}
                 </span>
               </div>
               <p className="mt-2 text-[14px] leading-relaxed text-muted-foreground">{s.description}</p>
@@ -200,16 +204,13 @@ function SupportPage() {
                     Call
                   </a>
                 )}
-                {s.website && (
-                  <a
-                    href={s.website}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                    className="flex min-h-11 flex-1 items-center justify-center rounded-xl border border-border text-[14px] font-medium text-foreground"
-                  >
-                    Website
-                  </a>
-                )}
+                <Link
+                  to="/support/$id"
+                  params={{ id: s.id }}
+                  className="flex min-h-11 flex-1 items-center justify-center rounded-xl border border-border text-[14px] font-medium text-foreground"
+                >
+                  Contact options
+                </Link>
               </div>
             </li>
           ))}

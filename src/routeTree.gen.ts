@@ -20,6 +20,7 @@ import { Route as SupportRouteImport } from './routes/support'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedJournalRouteImport } from './routes/_authenticated/journal'
 import { Route as AuthenticatedPlanRouteImport } from './routes/_authenticated/plan'
+import { Route as SupportIdRouteImport } from './routes/support_.$id'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -75,6 +76,11 @@ const AuthenticatedPlanRoute = AuthenticatedPlanRouteImport.update({
   path: '/plan',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const SupportIdRoute = SupportIdRouteImport.update({
+  id: '/support_/$id',
+  path: '/support/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,6 +93,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/plan': typeof AuthenticatedPlanRoute
+  '/support/$id': typeof SupportIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/journal': typeof AuthenticatedJournalRoute
   '/plan': typeof AuthenticatedPlanRoute
+  '/support/$id': typeof SupportIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -113,6 +121,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/journal': typeof AuthenticatedJournalRoute
   '/_authenticated/plan': typeof AuthenticatedPlanRoute
+  '/support_/$id': typeof SupportIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -127,6 +136,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/journal'
     | '/plan'
+    | '/support/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -139,6 +149,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/journal'
     | '/plan'
+    | '/support/$id'
   id:
     | '__root__'
     | '/'
@@ -152,6 +163,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/journal'
     | '/_authenticated/plan'
+    | '/support_/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -163,6 +175,7 @@ export interface RootRouteChildren {
   PathwaysRoute: typeof PathwaysRoute
   PrivacyRoute: typeof PrivacyRoute
   SupportRoute: typeof SupportRoute
+  SupportIdRoute: typeof SupportIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -244,6 +257,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPlanRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/support_/$id': {
+      id: '/support_/$id'
+      path: '/support/$id'
+      fullPath: '/support/$id'
+      preLoaderRoute: typeof SupportIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -271,6 +291,7 @@ const rootRouteChildren: RootRouteChildren = {
   PathwaysRoute: PathwaysRoute,
   PrivacyRoute: PrivacyRoute,
   SupportRoute: SupportRoute,
+  SupportIdRoute: SupportIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
