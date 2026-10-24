@@ -126,9 +126,9 @@ function SupportPage() {
         })}
       </div>
 
-      <p className="mt-4 rounded-xl border border-dashed border-clay/50 px-4 py-3 text-[12px] leading-relaxed text-clay">
-        Demonstration data. These are sample organisations created for a prototype. Every listing must be verified
-        before this directory is used for real.
+      <p className="mt-4 rounded-xl border border-dashed border-border px-4 py-3 text-[12px] leading-relaxed text-muted-foreground">
+        South African organisations. Details were checked against each organisation's official website on the date
+        shown. Numbers can change — use the official contact page if a call does not connect.
       </p>
 
       {services.isLoading ? (
