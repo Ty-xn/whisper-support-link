@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - Journal summaries are generated entirely in the browser from explicitly selected saved entries, preserving original wording; exports must not submit reports or use privileged reads.
+- Keep the FNB demonstration client-only and reuse the authenticated journal route; mock loan checks and responder concepts must never make live banking, identity-verification or dispatch calls.
