@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AssistantRouteImport } from './routes/assistant'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as FnbDemoRouteImport } from './routes/fnb-demo'
 import { Route as LearnRouteImport } from './routes/learn'
 import { Route as PathwaysRouteImport } from './routes/pathways'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -39,6 +40,11 @@ const AssistantRoute = AssistantRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FnbDemoRoute = FnbDemoRouteImport.update({
+  id: '/fnb-demo',
+  path: '/fnb-demo',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LearnRoute = LearnRouteImport.update({
@@ -86,6 +92,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
+  '/fnb-demo': typeof FnbDemoRoute
   '/learn': typeof LearnRoute
   '/pathways': typeof PathwaysRoute
   '/privacy': typeof PrivacyRoute
@@ -99,6 +106,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
+  '/fnb-demo': typeof FnbDemoRoute
   '/learn': typeof LearnRoute
   '/pathways': typeof PathwaysRoute
   '/privacy': typeof PrivacyRoute
@@ -114,6 +122,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/assistant': typeof AssistantRoute
   '/auth': typeof AuthRoute
+  '/fnb-demo': typeof FnbDemoRoute
   '/learn': typeof LearnRoute
   '/pathways': typeof PathwaysRoute
   '/privacy': typeof PrivacyRoute
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assistant'
     | '/auth'
+    | '/fnb-demo'
     | '/learn'
     | '/pathways'
     | '/privacy'
@@ -142,6 +152,7 @@ export interface FileRouteTypes {
     | '/'
     | '/assistant'
     | '/auth'
+    | '/fnb-demo'
     | '/learn'
     | '/pathways'
     | '/privacy'
@@ -156,6 +167,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/assistant'
     | '/auth'
+    | '/fnb-demo'
     | '/learn'
     | '/pathways'
     | '/privacy'
@@ -171,6 +183,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AssistantRoute: typeof AssistantRoute
   AuthRoute: typeof AuthRoute
+  FnbDemoRoute: typeof FnbDemoRoute
   LearnRoute: typeof LearnRoute
   PathwaysRoute: typeof PathwaysRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -206,6 +219,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/fnb-demo': {
+      id: '/fnb-demo'
+      path: '/fnb-demo'
+      fullPath: '/fnb-demo'
+      preLoaderRoute: typeof FnbDemoRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/learn': {
@@ -287,6 +307,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AssistantRoute: AssistantRoute,
   AuthRoute: AuthRoute,
+  FnbDemoRoute: FnbDemoRoute,
   LearnRoute: LearnRoute,
   PathwaysRoute: PathwaysRoute,
   PrivacyRoute: PrivacyRoute,
