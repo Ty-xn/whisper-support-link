@@ -4,10 +4,12 @@ import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Download, FileText } from "lucide-react";
+import { Download, FileText, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { buildPoliceSummary, deliverJournalFile } from "@/lib/journal-export";
+import { useServerFn } from "@tanstack/react-start";
+import { summariseJournal } from "@/lib/journal-summary.functions";
 
 export const Route = createFileRoute("/_authenticated/journal")({
   head: () => ({
@@ -67,6 +69,24 @@ function JournalPage() {
   const [error, setError] = useState("");
   const [showPoliceExport, setShowPoliceExport] = useState(false);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [showAi, setShowAi] = useState(false);
+  const [aiConsent, setAiConsent] = useState(false);
+  const [aiIds, setAiIds] = useState<string[]>([]);
+  const [aiDraft, setAiDraft] = useState("");
+  const [aiBusy, setAiBusy] = useState(false);
+  const summarise = useServerFn(summariseJournal);
+  const runAi = async () => {
+    setAiBusy(true);
+    try {
+      const result = await summarise({ data: { ids: aiIds } });
+      if (result.error) toast.error(result.error);
+      else setAiDraft(result.summary);
+    } catch {
+      toast.error("A summary could not be created just now.");
+    } finally {
+      setAiBusy(false);
+    }
+  };
 
   const entries = useQuery({
     queryKey: ["journal_entries"],
@@ -252,6 +272,20 @@ function JournalPage() {
         >
           <FileText aria-hidden="true" /> Export for police
         </Button>
+        <Button
+          type="button"
+          variant="outline"
+          disabled={!entries.data?.length || entries.isError}
+          className="min-h-12 w-full whitespace-normal text-[15px]"
+          onClick={() => {
+            setAiIds([]);
+            setAiDraft("");
+            setAiConsent(false);
+            setShowAi(true);
+          }}
+        >
+          <Sparkles aria-hidden="true" /> Draft a summary with AI
+        </Button>
       </div>
 
       <Dialog open={showPoliceExport} onOpenChange={setShowPoliceExport}>
@@ -301,6 +335,62 @@ function JournalPage() {
               <Download aria-hidden="true" /> Download summary
             </Button>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={showAi} onOpenChange={setShowAi}>
+        <DialogContent className="max-h-[85dvh] w-[calc(100%-2rem)] overflow-y-auto rounded-lg">
+          <DialogHeader>
+            <DialogTitle>AI summary draft</DialogTitle>
+            <DialogDescription className="mt-2 leading-relaxed">
+              Creates a neutral, date-ordered draft from the entries you choose, for you to review and edit. Nothing is reported or saved.
+            </DialogDescription>
+          </DialogHeader>
+          {!aiDraft ? (
+            <>
+              <fieldset className="space-y-2">
+                <legend className="mb-2 text-sm font-medium">Entries to include</legend>
+                {(entries.data ?? []).map((entry) => (
+                  <label key={entry.id} className="flex min-h-12 cursor-pointer items-start gap-3 border-b border-border py-2">
+                    <input
+                      type="checkbox"
+                      className="mt-1 size-5 shrink-0 accent-primary"
+                      checked={aiIds.includes(entry.id)}
+                      onChange={(e) => setAiIds((c) => (e.target.checked ? [...c, entry.id] : c.filter((id) => id !== entry.id)))}
+                    />
+                    <span className="text-sm text-foreground">{entry.title}<span className="block text-xs text-muted-foreground">{entry.incident_date ?? "No date"}</span></span>
+                  </label>
+                ))}
+              </fieldset>
+              <label className="flex items-start gap-3 rounded-lg border border-border bg-muted p-3 text-sm leading-relaxed text-foreground">
+                <input type="checkbox" className="mt-1 size-5 shrink-0 accent-primary" checked={aiConsent} onChange={(e) => setAiConsent(e.target.checked)} />
+                I agree to send the chosen entries to an AI model to create this draft. The text is used only to produce the draft and is not stored by SafePath.
+              </label>
+              <Button className="min-h-12" disabled={!aiConsent || aiIds.length === 0 || aiBusy} onClick={runAi}>
+                {aiBusy ? "Creating draft…" : "Create draft"}
+              </Button>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-muted-foreground">Check every line against what really happened and correct anything wrong. AI can make mistakes.</p>
+              <textarea
+                aria-label="Summary draft"
+                value={aiDraft}
+                onChange={(e) => setAiDraft(e.target.value)}
+                rows={14}
+                className="w-full rounded-xl border border-input bg-background px-3 py-3 text-[14px] text-foreground"
+              />
+              <div className="flex flex-wrap justify-end gap-2">
+                <Button variant="outline" className="min-h-12" onClick={() => setAiDraft("")}>Start again</Button>
+                <Button
+                  className="min-h-12"
+                  onClick={() => void deliverJournalFile(aiDraft, "journal-ai-summary.txt").catch(() => toast.error("The download could not be prepared."))}
+                >
+                  <Download aria-hidden="true" /> Download
+                </Button>
+              </div>
+            </>
+          )}
         </DialogContent>
       </Dialog>
 

@@ -112,6 +112,15 @@ function Home() {
         </span>
       </Link>
 
+      <Link to="/fnb-demo" className="surface mt-3 flex items-center gap-3 border-dashed px-4 py-4">
+        <span className="min-w-0 flex-1">
+          <span className="eyebrow">Hackathon demo</span>
+          <span className="block text-[15px] font-semibold text-foreground">Simulated FNB integration</span>
+          <span className="mt-0.5 block text-[13px] text-muted-foreground">See SafePath hidden inside a banking app.</span>
+        </span>
+        <span aria-hidden="true" className="text-muted-foreground">›</span>
+      </Link>
+
       <p className="mt-6 text-[12px] leading-relaxed text-muted-foreground">
         Quick exit leaves this site for a weather page. It does not clear your browsing history and cannot guarantee
         your safety.
