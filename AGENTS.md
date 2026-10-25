@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- Journal summaries are generated entirely in the browser from explicitly selected saved entries, preserving original wording; exports must not submit reports or use privileged reads.

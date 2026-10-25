@@ -4,6 +4,10 @@ import { useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { Download, FileText } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { buildPoliceSummary, deliverJournalFile } from "@/lib/journal-export";
 
 export const Route = createFileRoute("/_authenticated/journal")({
   head: () => ({
@@ -16,6 +20,8 @@ export const Route = createFileRoute("/_authenticated/journal")({
       },
       { property: "og:title", content: "Private Journal — SafePath" },
       { property: "og:description", content: "A private record only you can read." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
   component: JournalPage,
@@ -59,6 +65,8 @@ function JournalPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
   const [error, setError] = useState("");
+  const [showPoliceExport, setShowPoliceExport] = useState(false);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
 
   const entries = useQuery({
     queryKey: ["journal_entries"],
@@ -152,12 +160,7 @@ function JournalPage() {
         ].join("\n"),
       )
       .join("\n");
-    const url = URL.createObjectURL(new Blob([text], { type: "text/plain" }));
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "safepath-journal.txt";
-    link.click();
-    URL.revokeObjectURL(url);
+    void deliverJournalFile(text, "safepath-journal.txt").catch(() => toast.error("The download could not be prepared. Please try again."));
   };
 
   const startEdit = (entry: Entry) => {
@@ -216,8 +219,8 @@ function JournalPage() {
         authority, and administrators cannot see it.
       </p>
 
-      <div className="mt-5 flex gap-2">
-        <button
+      <div className="mt-5 flex flex-wrap gap-2">
+        <Button
           type="button"
           onClick={() => {
             setEditing(null);
@@ -227,16 +230,79 @@ function JournalPage() {
           className="min-h-12 flex-1 rounded-xl bg-primary text-[15px] font-medium text-primary-foreground"
         >
           {showForm ? "Close" : "New entry"}
-        </button>
-        <button
+        </Button>
+        <Button
+          variant="outline"
           type="button"
           onClick={exportEntries}
           disabled={(entries.data ?? []).length === 0}
           className="min-h-12 flex-1 rounded-xl border border-border text-[15px] font-medium text-foreground disabled:opacity-50"
         >
-          Export
-        </button>
+          <Download aria-hidden="true" /> Export
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          disabled={!entries.data?.length || entries.isError || entries.isFetching}
+          className="min-h-12 w-full whitespace-normal text-[15px]"
+          onClick={() => {
+            setSelectedIds([]);
+            setShowPoliceExport(true);
+          }}
+        >
+          <FileText aria-hidden="true" /> Export for police
+        </Button>
       </div>
+
+      <Dialog open={showPoliceExport} onOpenChange={setShowPoliceExport}>
+        <DialogContent className="max-h-[85dvh] w-[calc(100%-2rem)] overflow-y-auto rounded-lg">
+          <DialogHeader>
+            <DialogTitle>Export for police</DialogTitle>
+            <DialogDescription className="mt-2 leading-relaxed">
+              Choose the saved entries to include in a text summary. Nothing is sent to police.
+              This is not an affidavit or certified evidence. Attachments are not included.
+            </DialogDescription>
+          </DialogHeader>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            The downloaded file is no longer protected by SafePath. It may be visible in your downloads or on a shared device.
+            Only save or share it when it is safe for you.
+          </p>
+          <fieldset className="space-y-3">
+            <legend className="mb-3 text-sm font-medium">Entries to include</legend>
+            {(entries.data ?? []).map((entry) => (
+              <label key={entry.id} className="flex min-h-12 cursor-pointer items-start gap-3 border-b border-border py-2">
+                <input
+                  type="checkbox"
+                  className="mt-1 size-5 shrink-0 accent-primary"
+                  checked={selectedIds.includes(entry.id)}
+                  onChange={(event) => setSelectedIds((current) => event.target.checked ? [...current, entry.id] : current.filter((id) => id !== entry.id))}
+                />
+                <span className="min-w-0 break-words text-sm text-foreground">
+                  {entry.title}
+                  <span className="mt-1 block text-xs text-muted-foreground">{entry.incident_date ?? "Incident date not provided"}</span>
+                </span>
+              </label>
+            ))}
+          </fieldset>
+          <div className="flex flex-wrap justify-end gap-2">
+            <Button variant="outline" className="min-h-12" onClick={() => setShowPoliceExport(false)}>Cancel</Button>
+            <Button
+              className="min-h-12 whitespace-normal"
+              disabled={!selectedIds.some((id) => entries.data?.some((entry) => entry.id === id)) || entries.isError || entries.isFetching}
+              onClick={() => {
+                try {
+                  const text = buildPoliceSummary(entries.data ?? [], selectedIds, new Date());
+                  void deliverJournalFile(text, "journal-summary.txt").catch(() => toast.error("The download could not be prepared. Please try again."));
+                } catch {
+                  toast.error("Choose at least one saved entry to export.");
+                }
+              }}
+            >
+              <Download aria-hidden="true" /> Download summary
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {showForm && (
         <form onSubmit={submit} className="surface mt-4 space-y-4 px-4 py-4">
