@@ -46,6 +46,8 @@
   --color-mist: var(--mist);
   --color-clay: var(--clay);
   --color-sage: var(--sage);
+  --color-bank: var(--bank);
+  --color-bank-foreground: var(--bank-foreground);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -86,6 +88,8 @@
   --mist: oklch(0.9487 0.0084 236.56);
   --clay: oklch(0.51 0.0889 47.4);
   --sage: oklch(0.4867 0.0688 157.48);
+  --bank: oklch(0.46 0.078 192);
+  --bank-foreground: oklch(0.99 0.003 192);
 
   --sidebar: oklch(0.9801 0.0035 219.53);
   --sidebar-foreground: oklch(0.3144 0.0255 230.2);

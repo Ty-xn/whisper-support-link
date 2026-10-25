@@ -7,6 +7,8 @@ import { askAssistant } from "@/lib/assistant.functions";
 export const Route = createFileRoute("/assistant")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Support Assistant — SafePath" },
       {
         name: "description",

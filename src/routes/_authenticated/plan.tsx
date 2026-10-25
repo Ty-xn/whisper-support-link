@@ -8,6 +8,8 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/plan")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Emergency Plan — SafePath" },
       {
         name: "description",

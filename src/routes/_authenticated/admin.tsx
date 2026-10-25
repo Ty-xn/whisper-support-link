@@ -8,6 +8,10 @@ import { toast } from "sonner";
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
+      { property: "og:title", content: "Admin — SafePath" },
+      { property: "og:description", content: "Manage SafePath support organisations and verification dates." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Admin — SafePath" },
       { name: "description", content: "Manage verified support organisations and verification dates." },
       { name: "robots", content: "noindex" },
