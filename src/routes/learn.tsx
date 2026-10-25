@@ -7,6 +7,8 @@ import { supabase } from "@/integrations/supabase/client";
 export const Route = createFileRoute("/learn")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "Learn & Prevent — SafePath" },
       {
         name: "description",

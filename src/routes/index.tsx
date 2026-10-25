@@ -4,6 +4,8 @@ import { AppShell } from "@/components/AppShell";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
       { title: "SafePath — Find help. Stay safe. Speak when you're ready." },
       {
         name: "description",
