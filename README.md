@@ -1,4 +1,4 @@
-# Safe Haven Hub
+# Safe Path
 
 Build a modern, privacy-first web application called "SafePath".
 
@@ -302,6 +302,8 @@ Clear privacy notice.
 
 Create a Privacy & Safety page explaining these principles in simple language.
 
+We deliberately chose not to implement localized user pattern or behavioral tracking on the device. For a survivor under constant surveillance, a phone that 'thinks' or gathers usage metrics creates a high-risk digital footprint that can be compromised by an abuser. SafePath enforces a strict Zero-Trace, Predictable UX policy on the front end. Instead, we shift predictive analytics entirely to the FNB enterprise backend, leveraging machine learning strictly to monitor transaction risk, flag coercive loan anomalies, and process SAFPS biometric liveness payloads away from the physical device.
+
 ADMIN STRUCTURE:
 
 Create a basic admin dashboard concept for managing:
@@ -378,19 +380,4 @@ This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
 
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/ad868323-b257-4fe0-adea-cfd5d3fa2c3b).
 
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
-
-## Development
-
-Prefer working locally? You need Node.js and npm — [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating).
-
-```sh
-git clone <this-repository-url>
-cd <repository-name>
-npm i
-npm run dev
-```
