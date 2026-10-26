@@ -4,4 +4,5 @@
 - [x] Update simulated banking dashboard, duress explanation, disguised vault link and mock loan liveness overlay.
 - [x] Verify demo interactions, private-journal access and content-page metadata.
 - [x] Add GBV Command Centre USSD / Please Call Me offline fallback banner to Find Support and Emergency Plan.
-- [ ] Create technical documentation covering architecture and repository-link setup.
+- [x] Create technical documentation covering architecture and repository-link setup.
+- [ ] Add verified GitHub repository URL to documentation (waiting for user to connect/open Git sync and supply the URL).
