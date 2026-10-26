@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
+import { OfflineFallbackBanner } from "@/components/OfflineFallbackBanner";
 
 export const Route = createFileRoute("/_authenticated/plan")({
   head: () => ({
@@ -168,6 +169,8 @@ function PlanPage() {
         If you are in immediate danger, contact local emergency services when it is safe to do so. SafePath cannot call
         anyone for you and does not alert police or any organisation.
       </p>
+
+      <OfflineFallbackBanner />
 
       <section className="mt-7">
         <h2 className="font-display text-[22px] text-foreground">Trusted contacts</h2>
