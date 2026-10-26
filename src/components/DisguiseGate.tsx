@@ -1,42 +1,76 @@
 import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
 import { ConverterDisguise } from "@/components/ConverterDisguise";
+import { Button } from "@/components/ui/button";
+import { supabase } from "@/integrations/supabase/client";
+import { startJudgeDemo } from "@/lib/judge-demo.functions";
 import { hashPin, readLockConfig, readSession, writeSession, type LockConfig } from "@/lib/safety";
+
+// Demo unlock code used when the person has not set their own codes.
+const DEMO_UNLOCK = "1234";
 
 export function DisguiseGate({ children }: { children: ReactNode }) {
   const [ready, setReady] = useState(false);
   const [config, setConfig] = useState<LockConfig | null>(null);
   const [state, setState] = useState<"open" | "locked">("locked");
+  const [passBusy, setPassBusy] = useState(false);
+  const [passError, setPassError] = useState("");
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const demoLogin = useServerFn(startJudgeDemo);
 
   useEffect(() => {
-    const cfg = readLockConfig();
-    setConfig(cfg);
-    const session = readSession();
-    setState(!cfg || session === "open" ? "open" : "locked");
+    setConfig(readLockConfig());
+    setState(readSession() === "open" ? "open" : "locked");
     setReady(true);
-
-    const onStorage = () => {
-      const next = readLockConfig();
-      setConfig(next);
-      if (!next) setState("open");
+    const onUpdate = () => {
+      setConfig(readLockConfig());
+      if (readSession() === "open") setState("open");
     };
-    window.addEventListener("safepath:lock-updated", onStorage);
-    return () => window.removeEventListener("safepath:lock-updated", onStorage);
+    window.addEventListener("safepath:lock-updated", onUpdate);
+    return () => window.removeEventListener("safepath:lock-updated", onUpdate);
   }, []);
 
   const handleCode = useCallback(
     async (code: string) => {
-      if (!config) return;
+      if (!config) {
+        if (code === DEMO_UNLOCK) {
+          writeSession("open");
+          setState("open");
+        }
+        return;
+      }
       const hash = await hashPin(code);
       if (hash === config.unlockHash) {
         writeSession("open");
         setState("open");
       } else if (hash === config.duressHash) {
-        // Distress code: stay on the calculator, silently.
         writeSession("duress");
       }
     },
     [config],
   );
+
+  const fastPass = async () => {
+    setPassError("");
+    setPassBusy(true);
+    try {
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      const tokens = await demoLogin();
+      const { error } = await supabase.auth.setSession(tokens);
+      if (error) throw error;
+      writeSession("open");
+      setState("open");
+      await navigate({ to: "/journal", replace: true });
+    } catch {
+      setPassError("Fast Pass could not start. Type 1234= to unlock instead.");
+    } finally {
+      setPassBusy(false);
+    }
+  };
 
   if (!ready) {
     return (
@@ -46,7 +80,28 @@ export function DisguiseGate({ children }: { children: ReactNode }) {
     );
   }
 
-  if (state === "locked") return <ConverterDisguise onSubmitCode={handleCode} />;
+  if (state === "locked") {
+    return (
+      <div>
+        {!config && (
+          <aside className="border-b border-border bg-muted px-5 py-3">
+            <p className="text-[13px] leading-relaxed text-foreground">
+              <strong>FNB Hackathon Demo Mode:</strong> SafePath is disguised as a utility. Type 1234= on the keypad
+              to unlock, or click the Fast Pass button.
+            </p>
+            <Button className="mt-2 w-full" onClick={fastPass} disabled={passBusy}>
+              {passBusy ? "Opening demo…" : "Judge Fast Pass"}
+            </Button>
+            <p className="mt-1.5 text-[12px] text-muted-foreground">
+              Opens a shared demo account with fictional records only.
+            </p>
+            {passError && <p role="alert" className="mt-1 text-[12px] text-clay">{passError}</p>}
+          </aside>
+        )}
+        <ConverterDisguise onSubmitCode={handleCode} />
+      </div>
+    );
+  }
 
   return <>{children}</>;
 }
