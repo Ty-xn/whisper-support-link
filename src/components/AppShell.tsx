@@ -1,6 +1,13 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import type { ReactNode } from "react";
 import { quickExit } from "@/lib/safety";
+import { useAuth } from "@/hooks/useAuth";
+import { isJudgeDemoUser } from "@/lib/judge-demo";
+import { useQueryClient } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
+import { useState } from "react";
+import { toast } from "sonner";
 
 const NAV = [
   { to: "/", label: "Home" },
@@ -12,6 +19,22 @@ const NAV = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
+  const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const [exiting, setExiting] = useState(false);
+  const exitDemo = async () => {
+    setExiting(true);
+    try {
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      const { error } = await supabase.auth.signOut({ scope: "local" });
+      if (error) throw error;
+      await navigate({ to: "/auth", replace: true });
+    } catch {
+      toast.error("Could not exit the demo. Please try again.");
+    } finally { setExiting(false); }
+  };
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border bg-background/95 backdrop-blur-sm">
@@ -30,7 +53,16 @@ export function AppShell({ children }: { children: ReactNode }) {
         </div>
       </header>
 
-      <main className="mx-auto w-full max-w-[560px] px-4 pb-28 pt-6">{children}</main>
+      <main className="mx-auto w-full max-w-[560px] px-4 pb-28 pt-6">
+        {isJudgeDemoUser(user) && <aside className="mb-5 border-b border-border pb-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm font-semibold text-foreground">Hackathon judge demo</p>
+            <Button variant="outline" onClick={exitDemo} disabled={exiting}>Exit judge demo</Button>
+          </div>
+          <p className="mt-2 text-[13px] text-muted-foreground">Shared fictional records. Do not enter personal information.</p>
+        </aside>}
+        {children}
+      </main>
 
       <nav
         aria-label="Main"

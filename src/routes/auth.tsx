@@ -3,6 +3,12 @@ import { useEffect, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { useServerFn } from "@tanstack/react-start";
+import { useQueryClient } from "@tanstack/react-query";
+import { Button } from "@/components/ui/button";
+import { startJudgeDemo } from "@/lib/judge-demo.functions";
+import { writeSession } from "@/lib/safety";
+import { LogIn } from "lucide-react";
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -30,6 +36,29 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [demoBusy, setDemoBusy] = useState(false);
+  const demoLogin = useServerFn(startJudgeDemo);
+  const queryClient = useQueryClient();
+
+  const judgeDemo = async () => {
+    setError("");
+    setNotice("");
+    setDemoBusy(true);
+    try {
+      await queryClient.cancelQueries();
+      queryClient.clear();
+      const tokens = await demoLogin();
+      const { error: sessionError } = await supabase.auth.setSession(tokens);
+      if (sessionError) throw sessionError;
+      writeSession("open");
+      window.dispatchEvent(new Event("safepath:lock-updated"));
+      await navigate({ to: "/journal", replace: true });
+    } catch {
+      setError("Judge demo login could not start. Please try again shortly.");
+    } finally {
+      setDemoBusy(false);
+    }
+  };
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -104,6 +133,18 @@ function AuthPage() {
         cannot see them.
       </p>
 
+      <div className="mt-5 space-y-2">
+        <Button type="button" onClick={judgeDemo} disabled={busy || demoBusy}
+          className="h-auto min-h-14 w-full whitespace-normal px-4 py-3 text-center text-[15px]">
+          <LogIn aria-hidden="true" />
+          {demoBusy ? "Opening judge demo…" : "Hackathon Judge: 1-Click Judge Demo Login"}
+        </Button>
+        <p className="text-[13px] leading-relaxed text-muted-foreground">
+          Shared demo account · Fictional journal and safety plan only. Do not enter personal information; other judges can see demo changes.
+        </p>
+        {error && <p role="alert" className="text-[13px] text-destructive">{error}</p>}
+      </div>
+
       <form onSubmit={submit} className="surface mt-5 space-y-4 px-4 py-4">
         <div>
           <label htmlFor="email" className="eyebrow">
@@ -139,7 +180,7 @@ function AuthPage() {
         {notice && <p className="text-[13px] text-foreground">{notice}</p>}
         <button
           type="submit"
-          disabled={busy}
+          disabled={busy || demoBusy}
           className="min-h-12 w-full rounded-xl bg-primary text-[15px] font-medium text-primary-foreground disabled:opacity-50"
         >
           {busy ? "Please wait…" : mode === "signin" ? "Sign in" : "Create account"}
