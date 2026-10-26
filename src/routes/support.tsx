@@ -3,6 +3,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useMemo, useState } from "react";
 import { AppShell } from "@/components/AppShell";
 import { supabase } from "@/integrations/supabase/client";
+import { OfflineFallbackBanner } from "@/components/OfflineFallbackBanner";
 
 export const Route = createFileRoute("/support")({
   head: () => ({
@@ -92,6 +93,8 @@ function SupportPage() {
       <p className="mt-2 text-[15px] leading-relaxed text-muted-foreground">
         Browse or search. You do not need an account, and nothing you search is stored.
       </p>
+
+      <OfflineFallbackBanner />
 
       <div className="mt-5">
         <label htmlFor="q" className="eyebrow">
