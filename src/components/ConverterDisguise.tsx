@@ -38,30 +38,46 @@ export function ConverterDisguise({ onSubmitCode }: { onSubmitCode: (code: strin
     setExpression("");
   };
 
+  const isOp = (k: string) => ["÷", "×", "−", "+"].includes(k);
   return (
-    <div className="flex min-h-screen flex-col bg-background px-5 pb-8 pt-10">
-      <p className="text-sm font-medium text-muted-foreground">Calculator</p>
-      <div className="mt-6 rounded-xl border border-border bg-card px-5 py-8 text-right">
-        <span className="break-all font-display text-4xl text-foreground">{display}</span>
-      </div>
-      <div className="mt-6 grid flex-1 grid-cols-4 gap-2.5">
-        {KEYS.map((key) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => append(key)}
-            className="min-h-14 rounded-xl border border-border bg-card text-lg font-medium text-foreground active:bg-muted"
+    <div className="flex justify-center bg-background sm:py-8">
+      <div className="flex w-full max-w-[400px] flex-col px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 sm:rounded-3xl sm:border sm:border-border sm:bg-card sm:p-5 sm:shadow-sm">
+        <p className="text-sm font-medium text-muted-foreground">Calculator</p>
+        <div className="mt-4 flex h-28 items-end justify-end overflow-hidden rounded-2xl bg-muted px-5 py-5">
+          <span
+            aria-live="polite"
+            className="block max-w-full truncate text-right font-sans text-5xl font-light tabular-nums text-foreground"
           >
-            {key}
+            {display}
+          </span>
+        </div>
+        <div className="mt-4 grid grid-cols-4 gap-3">
+          {KEYS.map((key) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => append(key)}
+              aria-label={key === "C" ? "Clear" : key}
+              className={`h-16 rounded-2xl sm:h-[4.5rem] text-2xl font-medium transition-colors active:scale-[0.97] ${
+                isOp(key)
+                  ? "bg-secondary text-secondary-foreground"
+                  : key === "C"
+                    ? "bg-muted text-muted-foreground"
+                    : "border border-border bg-card text-foreground hover:bg-muted"
+              }`}
+            >
+              {key}
+            </button>
+          ))}
+          <button
+            type="button"
+            onClick={evaluate}
+            aria-label="Equals"
+            className="col-span-4 h-16 rounded-2xl bg-primary text-2xl font-medium text-primary-foreground active:opacity-90"
+          >
+            =
           </button>
-        ))}
-        <button
-          type="button"
-          onClick={evaluate}
-          className="col-span-4 min-h-14 rounded-xl bg-primary text-lg font-medium text-primary-foreground active:opacity-90"
-        >
-          =
-        </button>
+        </div>
       </div>
     </div>
   );
