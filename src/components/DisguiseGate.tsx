@@ -84,18 +84,20 @@ export function DisguiseGate({ children }: { children: ReactNode }) {
     return (
       <div>
         {!config && (
-          <aside className="border-b border-border bg-muted px-5 py-3">
-            <p className="text-[13px] leading-relaxed text-foreground">
-              <strong>FNB Hackathon Demo Mode:</strong> SafePath is disguised as a utility. Type 1234= on the keypad
-              to unlock, or click the Fast Pass button.
-            </p>
-            <Button className="mt-2 w-full" onClick={fastPass} disabled={passBusy}>
-              {passBusy ? "Opening demo…" : "Judge Fast Pass"}
-            </Button>
-            <p className="mt-1.5 text-[12px] text-muted-foreground">
-              Opens a shared demo account with fictional records only.
-            </p>
-            {passError && <p role="alert" className="mt-1 text-[12px] text-clay">{passError}</p>}
+          <aside className="border-b border-border bg-muted px-4 py-3">
+            <div className="mx-auto max-w-[400px]">
+              <p className="text-[13px] leading-relaxed text-foreground">
+                <strong>FNB Hackathon Demo Mode:</strong> SafePath is disguised as a utility. Type 1234= on the keypad
+                to unlock, or click the Fast Pass button.
+              </p>
+              <Button className="mt-2 w-full" onClick={fastPass} disabled={passBusy}>
+                {passBusy ? "Opening demo…" : "Judge Fast Pass"}
+              </Button>
+              <p className="mt-1.5 text-[12px] text-muted-foreground">
+                Opens a shared demo account with fictional records only.
+              </p>
+              {passError && <p role="alert" className="mt-1 text-[12px] text-clay">{passError}</p>}
+            </div>
           </aside>
         )}
         <ConverterDisguise onSubmitCode={handleCode} />
