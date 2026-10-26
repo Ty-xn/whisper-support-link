@@ -47,18 +47,18 @@ export function OfflineFallbackBanner() {
           </svg>
           <h2
             id="offline-protocol-heading"
-            className="text-[11px] leading-snug font-semibold tracking-[0.14em] uppercase text-primary-foreground/85"
+            className="text-[11px] leading-snug font-semibold tracking-[0.14em] uppercase text-primary-foreground/95"
           >
             Load Shedding &amp; Zero-Data Offline Fallback Protocol
           </h2>
         </div>
 
         <p className="mt-3 font-display text-[30px] leading-none tracking-tight">{USSD_CODE}</p>
-        <p className="mt-2 text-[14px] leading-relaxed text-primary-foreground/90">
+        <p className="mt-2 text-[14px] leading-relaxed text-primary-foreground">
           GBV Command Centre <strong className="font-semibold">&ldquo;Please Call Me&rdquo;</strong> trigger. Dial it
           and a social worker calls you back, 24 hours a day.
         </p>
-        <p className="mt-1.5 text-[13px] leading-relaxed text-primary-foreground/80">
+        <p className="mt-1.5 text-[13px] leading-relaxed text-primary-foreground/95">
           Runs on the ordinary voice network &mdash; no data, no airtime, no app, no smartphone, no account. It still
           needs mobile signal, and a code can be seen on your screen, so use it only when it is safe.
         </p>
@@ -85,7 +85,7 @@ export function OfflineFallbackBanner() {
           </button>
         </div>
 
-        <p className="mt-3 border-t border-primary-foreground/20 pt-3 text-[12px] leading-relaxed text-primary-foreground/80">
+        <p className="mt-3 border-t border-primary-foreground/20 pt-3 text-[12px] leading-relaxed text-primary-foreground/95">
           No signal for the USSD menu? Text &ldquo;help&rdquo; to 31531, or add Skype contact HelpmeGBV. Availability of
           the USSD and &ldquo;Please Call Me&rdquo; options can differ by network &mdash; if one does not open, use the
           toll-free number. SafePath does not place these calls for you.
