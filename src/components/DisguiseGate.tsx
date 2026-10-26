@@ -33,6 +33,38 @@ export function DisguiseGate({ children }: { children: ReactNode }) {
     return () => window.removeEventListener("safepath:lock-updated", onUpdate);
   }, []);
 
+  // False footprint: the tab title always reads as a plain calculator,
+  // so the browser tab, history list and mobile app switcher show nothing revealing.
+  useEffect(() => {
+    const NEUTRAL = "Calculator";
+    const apply = () => { if (document.title !== NEUTRAL) document.title = NEUTRAL; };
+    apply();
+    const obs = new MutationObserver(apply);
+    obs.observe(document.head, { childList: true, subtree: true, characterData: true });
+    return () => obs.disconnect();
+  }, []);
+
+  // Auto lock after 5 minutes without activity.
+  useEffect(() => {
+    if (state !== "open") return;
+    const LIMIT = 5 * 60 * 1000;
+    let timer = window.setTimeout(lock, LIMIT);
+    function lock() {
+      window.sessionStorage.removeItem("safepath.session");
+      queryClient.clear();
+      void supabase.auth.signOut({ scope: "local" });
+      window.history.replaceState(null, "", "/");
+      setState("locked");
+    }
+    const reset = () => { window.clearTimeout(timer); timer = window.setTimeout(lock, LIMIT); };
+    const events = ["pointerdown", "keydown", "scroll", "touchstart", "mousemove"];
+    events.forEach((e) => window.addEventListener(e, reset, { passive: true }));
+    return () => {
+      window.clearTimeout(timer);
+      events.forEach((e) => window.removeEventListener(e, reset));
+    };
+  }, [state, queryClient]);
+
   const handleCode = useCallback(
     async (code: string) => {
       if (!config) {
