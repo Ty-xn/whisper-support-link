@@ -40,13 +40,13 @@ export function ConverterDisguise({ onSubmitCode }: { onSubmitCode: (code: strin
 
   const isOp = (k: string) => ["÷", "×", "−", "+"].includes(k);
   return (
-    <div className="flex min-h-[100dvh] items-stretch justify-center bg-background sm:items-center sm:p-6">
+    <div className="flex justify-center bg-background sm:py-8">
       <div className="flex w-full max-w-[400px] flex-col px-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-6 sm:rounded-3xl sm:border sm:border-border sm:bg-card sm:p-5 sm:shadow-sm">
         <p className="text-sm font-medium text-muted-foreground">Calculator</p>
-        <div className="mt-4 flex min-h-[7rem] flex-1 items-end justify-end overflow-hidden rounded-2xl bg-muted px-5 py-5 sm:flex-none">
+        <div className="mt-4 flex h-28 items-end justify-end overflow-hidden rounded-2xl bg-muted px-5 py-5">
           <span
             aria-live="polite"
-            className="block max-w-full truncate text-right font-display text-5xl tabular-nums text-foreground"
+            className="block max-w-full truncate text-right font-sans text-5xl font-light tabular-nums text-foreground"
           >
             {display}
           </span>
@@ -58,7 +58,7 @@ export function ConverterDisguise({ onSubmitCode }: { onSubmitCode: (code: strin
               type="button"
               onClick={() => append(key)}
               aria-label={key === "C" ? "Clear" : key}
-              className={`aspect-square rounded-2xl text-2xl font-medium transition-colors active:scale-[0.97] ${
+              className={`h-16 rounded-2xl sm:h-[4.5rem] text-2xl font-medium transition-colors active:scale-[0.97] ${
                 isOp(key)
                   ? "bg-secondary text-secondary-foreground"
                   : key === "C"
