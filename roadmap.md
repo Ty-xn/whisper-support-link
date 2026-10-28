@@ -1,4 +1,5 @@
 # Tasks
+- [x] Change inactivity exit to two minutes and send both inactivity exit and Quick Exit to Google.
 - [x] Add isolated, pre-populated judge demo account and one-click login.
 - [x] Verify judge journal entry, safety plan persistence, and protected access after demo exit.
 - [x] Update simulated banking dashboard, duress explanation, disguised vault link and mock loan liveness overlay.

@@ -6,7 +6,7 @@ import { ConverterDisguise } from "@/components/ConverterDisguise";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { startJudgeDemo } from "@/lib/judge-demo.functions";
-import { hashPin, readLockConfig, readSession, writeSession, type LockConfig } from "@/lib/safety";
+import { hashPin, readLockConfig, readSession, writeSession, quickExit, INACTIVITY_EXIT_MS, type LockConfig } from "@/lib/safety";
 
 // Demo unlock code used when the person has not set their own codes.
 const DEMO_UNLOCK = "1234";
@@ -44,24 +44,47 @@ export function DisguiseGate({ children }: { children: ReactNode }) {
     return () => obs.disconnect();
   }, []);
 
-  // Auto lock after 5 minutes without activity.
+  // Leave after two minutes; recheck elapsed time when a suspended tab resumes.
   useEffect(() => {
     if (state !== "open") return;
-    const LIMIT = 5 * 60 * 1000;
-    let timer = window.setTimeout(lock, LIMIT);
+    let lastActivity = Date.now();
+    let exiting = false;
+    let timer = window.setTimeout(check, INACTIVITY_EXIT_MS);
+    let exitTimer: number | undefined;
     function lock() {
+      if (exiting) return;
+      exiting = true;
       window.sessionStorage.removeItem("safepath.session");
       queryClient.clear();
-      void supabase.auth.signOut({ scope: "local" });
-      window.history.replaceState(null, "", "/");
       setState("locked");
+      // Navigation must not be held up by a slow or failed sign-out request.
+      exitTimer = window.setTimeout(quickExit, 750);
+      void supabase.auth.signOut({ scope: "local" }).then(quickExit, quickExit);
     }
-    const reset = () => { window.clearTimeout(timer); timer = window.setTimeout(lock, LIMIT); };
+    function check() {
+      window.clearTimeout(timer);
+      const remaining = INACTIVITY_EXIT_MS - (Date.now() - lastActivity);
+      if (remaining <= 0) lock();
+      else timer = window.setTimeout(check, remaining);
+    }
+    const reset = () => {
+      if (exiting) return;
+      if (Date.now() - lastActivity >= INACTIVITY_EXIT_MS) { lock(); return; }
+      lastActivity = Date.now();
+      window.clearTimeout(timer);
+      timer = window.setTimeout(check, INACTIVITY_EXIT_MS);
+    };
     const events = ["pointerdown", "keydown", "scroll", "touchstart", "mousemove"];
     events.forEach((e) => window.addEventListener(e, reset, { passive: true }));
+    document.addEventListener("visibilitychange", check);
+    window.addEventListener("pageshow", check);
     return () => {
       window.clearTimeout(timer);
+      // An exit already triggered must continue even after locking unmounts this effect.
+      if (!exiting && exitTimer !== undefined) window.clearTimeout(exitTimer);
       events.forEach((e) => window.removeEventListener(e, reset));
+      document.removeEventListener("visibilitychange", check);
+      window.removeEventListener("pageshow", check);
     };
   }, [state, queryClient]);
 

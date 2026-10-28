@@ -1,5 +1,7 @@
 const CONFIG_KEY = "safepath.lock";
 const SESSION_KEY = "safepath.session";
+export const INACTIVITY_EXIT_MS = 2 * 60 * 1000;
+export const EXIT_DESTINATION = "https://www.google.com";
 
 export type LockConfig = {
   enabled: boolean;
@@ -58,5 +60,5 @@ export function quickExit() {
   } catch {
     /* ignore */
   }
-  window.location.replace("https://www.bbc.com/weather");
+  window.location.replace(EXIT_DESTINATION);
 }
