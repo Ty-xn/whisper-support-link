@@ -124,7 +124,7 @@ function Home() {
       </Link>
 
       <p className="mt-6 text-[12px] leading-relaxed text-muted-foreground">
-        Quick exit leaves this site for a weather page. It does not clear your browsing history and cannot guarantee
+        Quick exit leaves this site for Google. It does not clear your browsing history and cannot guarantee
         your safety.
       </p>
     </AppShell>
