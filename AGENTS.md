@@ -10,6 +10,5 @@
 <!-- LOVABLE:END -->
 
 - Journal summaries are generated entirely in the browser from explicitly selected saved entries, preserving original wording; exports must not submit reports or use privileged reads.
-- Keep exit destination and inactivity duration centralized in the browser-safe safety module; recheck elapsed inactivity on tab resume so suspended timers cannot renew an expired session.
 - Keep the FNB demonstration client-only and reuse the authenticated journal route; mock loan checks and responder concepts must never make live banking, identity-verification or dispatch calls.
 - Judge login issues a normal authenticated session only for the fixed dedicated demo identity, without caller-controlled targets; all journal and plan operations retain existing owner-scoped RLS, and the shared demo is visibly labelled to prevent personal disclosures.
